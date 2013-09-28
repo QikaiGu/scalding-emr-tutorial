@@ -19,7 +19,8 @@ libraryDependencies ++= Seq(
   "org.apache.hadoop" % "hadoop-core" % "1.0.3" % "provided",
   "com.twitter" %% "scalding-core" % "0.8.11",
   "com.twitter" %% "scalding-date" % "0.8.11",
-  "com.twitter" %% "scalding-args" % "0.8.11"
+  "com.twitter" %% "scalding-args" % "0.8.11",
+  "org.specs2" % "specs2_2.10" % "2.2" % "test"
 )
 
 // Required for sbt-assembly
@@ -27,8 +28,8 @@ assemblySettings
 
 mainClass in assembly := Some("com.sharethrough.emr_tutorial.JobRunner")
 
-// Borrowed via twitter/scalding, used to resolve the conflicts that occur when
-// creating a fat jar.
+// Borrowed from twitter/scalding; used to resolve the conflicts that occur when
+// creating a fat jar with sbt-assembly.
 mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
   {
     case s if s.endsWith(".class") => MergeStrategy.last
