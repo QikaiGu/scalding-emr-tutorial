@@ -3,7 +3,7 @@ package com.sharethrough.emr_tutorial
 import org.specs2.mutable.Specification
 import com.twitter.scalding._
 
-class ReferrerCountingJobSpec extends Specification {
+class LocationCountingJobSpec extends Specification {
   import Dsl._
 
   val lines = List(
@@ -16,7 +16,7 @@ class ReferrerCountingJobSpec extends Specification {
 
     What are the semantics of 'should' with respect to parallel execution?
   */
-  JobTest("com.sharethrough.emr_tutorial.ReferrerCountingJob").
+  JobTest("com.sharethrough.emr_tutorial.LocationCountingJob").
     arg("input", "inputFile").
     arg("output", "outputFile").
     source(JsonLine("inputFile", List("body")), lines).
@@ -28,7 +28,7 @@ class ReferrerCountingJobSpec extends Specification {
       "Contains all impressions for all publishers, grouped by referrers " >> {
         outputBuffer.size must_== 2
         outputBuffer must contain(("www.example.com", 2))
-        outputBuffer must contain(("UNKNOWN", 1))
+        outputBuffer must contain(("www.UNKNOWNLOCATION.com", 1))
       }
 
   }.run.finish
