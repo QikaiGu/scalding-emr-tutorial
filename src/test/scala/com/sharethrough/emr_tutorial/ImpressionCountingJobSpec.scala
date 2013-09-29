@@ -39,6 +39,7 @@ class ImpressionCountingJobSpec extends Specification {
     arg("input", "inputFile").
     arg("output", "outputFile").
     source(Tsv("inputFile", ImpressionCountingJob.inputFormat), fakeInputData).
+    // TODO Note that this tuple has to match the output format
     sink[(String, Int)](Tsv("outputFile")) { outputBuffer =>
       // TODO: Note that the example block is now nested
       "Return the number of impressions requests per placement" >> {
