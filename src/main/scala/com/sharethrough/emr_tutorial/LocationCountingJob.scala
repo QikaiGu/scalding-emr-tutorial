@@ -15,7 +15,7 @@ class LocationCountingJob(args: Args) extends Job(args) {
     .map('line -> 'ploc) {
       // Extract the page location into a new 'ploc field
       body: String =>
-        val pattern = """GET /impression\S*ploc=(\S+)(&| )""".r
+        val pattern = """GET /impression\S*ploc=(\S+)&""".r
         pattern.findFirstMatchIn(body) match {
           // Extract the page location
           case Some(matchData) => matchData.subgroups(0)
