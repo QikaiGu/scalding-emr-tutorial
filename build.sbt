@@ -28,6 +28,9 @@ assemblySettings
 
 mainClass in assembly := Some("com.sharethrough.emr_tutorial.JobRunner")
 
+// Prevent tests from running into each other
+parallelExecution in Test := false
+
 // Borrowed from twitter/scalding; used to resolve the conflicts that occur when
 // creating a fat jar with sbt-assembly.
 mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
