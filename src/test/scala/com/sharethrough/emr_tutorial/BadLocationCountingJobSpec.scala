@@ -8,6 +8,8 @@ import com.twitter.scalding._
  * good data and bad data into separate specifications).  I do like the
  * simplicity of these 'bad data' specifications: no matter what you add to the
  * source data, the output is empty.
+ *
+ * See #LocationCountingJobSpec.
  */
 class BadLocationCountingJobSpec extends Specification {
 
@@ -35,7 +37,7 @@ class BadLocationCountingJobSpec extends Specification {
     arg("output", "outputFile").
     arg("placementId", "FAKE_PLACEMENT_ID").
     arg("impressionFloor", "2").
-    source(JsonLine("inputFile", List("body")), lines).
+    source(TextLine("inputFile"), lines).
     sink[(String, Int)](Tsv("outputFile")) {
     outputBuffer =>
       "LocationCountingJob outputs nothing when the data is bad" >> {

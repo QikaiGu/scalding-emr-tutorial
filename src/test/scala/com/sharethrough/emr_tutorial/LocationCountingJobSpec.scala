@@ -34,7 +34,7 @@ class LocationCountingJobSpec extends Specification {
     .arg("output", "outputFile")
     .arg("placementId", "FAKE_PLACEMENT_ID")
     .arg("impressionFloor", "2")
-    .source(JsonLine("inputFile", List("body")), lines)
+    .source(TextLine("inputFile"), lines)
 
     // TODO This tuple has to match the output format
     .sink[(String, Int)](Tsv("outputFile")) { outputBuffer =>
