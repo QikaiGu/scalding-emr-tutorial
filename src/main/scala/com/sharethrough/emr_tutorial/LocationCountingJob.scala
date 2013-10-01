@@ -1,8 +1,7 @@
 package com.sharethrough.emr_tutorial
 
 import com.twitter.scalding._
-import java.net.URI
-import java.net.URLDecoder
+import java.net.{URISyntaxException, URI, URLDecoder}
 
 class LocationCountingJob(args: Args) extends Job(args) {
   TextLine(args("input"))
@@ -25,7 +24,12 @@ class LocationCountingJob(args: Args) extends Job(args) {
     }
     .map('ploc -> 'hostname) {
       // Extract the hostname into a new 'hostname field
-      ploc: String => new URI(URLDecoder.decode(ploc, "UTF-8")).getHost
+      ploc: String =>
+        try {
+          new URI(URLDecoder.decode(ploc, "UTF-8")).getHost
+        } catch {
+          case _: URISyntaxException => "www.UNKNOWNLOCATION.com"
+        }
     }
     // Count the number of impressions by 'hostname
     .groupBy('hostname) { _.size }
