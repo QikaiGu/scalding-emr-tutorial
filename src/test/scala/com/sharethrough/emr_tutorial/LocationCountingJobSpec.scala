@@ -34,17 +34,23 @@ class LocationCountingJobSpec extends Specification {
 
     What are the semantics of 'should' with respect to parallel execution?
   */
+
+  // Fully-qualified name of our job so the runner can find it
   JobTest("com.sharethrough.emr_tutorial.LocationCountingJob")
+
+    // Supply test values for all required arguments
     .arg("input", "inputFile")
     .arg("output", "outputFile")
     .arg("placementId", "FAKE_PLACEMENT_ID")
     .arg("impressionFloor", "2")
+
+    // Supply our test data to Scalding
     .source(TextLine("inputFile"), lines)
 
-    // TODO This tuple has to match the output format
+    // Specify the sink and format of the output
     .sink[(String, Int)](Tsv("outputFile")) { outputBuffer =>
 
-      // TODO: This example block is inside our job now! (not outside like it used to be)
+      // TODO: This Specs2 block is inside our job now! (not outside like it used to be)
       "Impressions grouped by 'placementId', greater than 'impressionFloor'" >> {
         outputBuffer.size must_== 3
         outputBuffer must contain(("www.allaboutbalance.com", 3))
