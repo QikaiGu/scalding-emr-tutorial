@@ -19,7 +19,7 @@ class LocationCountingJob(args: Args) extends Job(args) {
         pattern.findFirstMatchIn(body) match {
           case Some(matchData) => matchData.subgroups(0)
           // This will help us track the number of times we couldn't get the location
-          case None => "http://www.UNKNOWNLOCATION.com/"
+          case None => "http://www.emptyOrNoLocation.com/"
         }
     }
     .map('ploc -> 'hostname) {
@@ -27,21 +27,25 @@ class LocationCountingJob(args: Args) extends Job(args) {
       ploc : String =>
         try {
           val hostname = new URI(URLDecoder.decode(ploc, "UTF-8")).getHost
-          // When ploc is empty, hostname is NULL
-          if (hostname != null) hostname else "www.UNKNOWNLOCATION.com"
+          // When ploc is empty, getHost will return NULL
+          if (hostname != null) hostname else "www.emptyOrNoLocation.com"
         } catch {
-          case _: URISyntaxException => "www.UNKNOWNLOCATION.com"
+          case _: URISyntaxException => "www.badLocation.com"
         }
     }
     // Count the number of impressions by 'hostname
     .groupBy('hostname) { _.size }
     .filter('hostname, 'size) {
       // We're only interested in the hosts who beat the impressionFloor.  We're
-      // also interested in knowing how many impressions where the placement location
-      // was unavailable.
+      // also interested in preserving stats for impressions where we couldn't
+      // capture placement location
       fields: (String, Int) =>
         val (hostname, size) = fields
-        hostname.equals("http://www.UNKNOWNLOCATION.com/") || size >= args("impressionFloor").toInt
+        hostname match {
+          case "www.emptyOrNoLocation.com" => true
+          case "www.badLocation.com" => true
+          case _ => size >= args("impressionFloor").toInt
+        }
     }
     .write(Tsv(args("output")))
 }
