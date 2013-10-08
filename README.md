@@ -90,7 +90,7 @@ hadoop \
   jar target/scala-2.10/scalding_emr_tutorial-assembly-1.0.jar \
   com.sharethrough.emr_tutorial.LocationCountingJob \
   --hdfs \
-  --input "./data/*" \
+  --input ./data/click-stream.log \
   --output ./data/output \
   --placementId FAKE_PLACEMENT_ID \
   --impressionFloor 2
@@ -109,24 +109,24 @@ Notice the _SUCCESS file.  [Success](https://issues.apache.org/jira/browse/MAPRE
 
 ```
 sfo-rslifka:~/workspace/scalding-emr-tutorial(master)$ cat data/output/part-00000 
-www.allaboutbalance.com	3
-www.badLocation.com	1
-www.emptyOrNoLocation.com	2
-www.sharethrough.com	2
+www.allaboutbalance.com 3
+www.badLocation.com 1
+www.emptyOrNoLocation.com 3
+www.sharethrough.com  2
 ```
 
 ...and there's our TSV, brilliant.
 
 ## Step 4 - Executing Remotely With Elasticity and Elastic MapReduce
 
-Included in this tutorial is `elasticity.rb`, a small script that utilizes the [Elasticity](https://github.com/rslifka/elasticity) gem to submit your shiny new Scalding job to EMR.  It also relies on Elasticity to upload the test data prior to running the job.
+Included in this tutorial is `elasticity.rb`, a small script that utilizes the [Elasticity](https://github.com/rslifka/elasticity) gem to submit your shiny new Scalding job to EMR.  It also relies on Elasticity to upload the test data prior to running the job, so you don't have to be concerned about how to make your job tests data EMR-accessible.
 
 ### Step 4a - Install Elasticity
 
 If you're running a .ruby*-aware tool like [RVM](https://rvm.io/), you'll notice that you're using a new gemset in this folder: `scalding-emr-tutorial`.  Go ahead and install Elasticity:
 
 ```
-gem install elasticity
+gem install elasticity --no-rdoc --no-ri
 ```
 
 ### Step 4b - Create an S3 Bucket
@@ -137,13 +137,38 @@ gem install elasticity
 These are only needed locally to launch the job via Elasticity, which inspects your environment for credentials.
 
 ```
-export AWS_ACCESS_KEY_ID=
-export AWS_SECRET_ACCESS_KEY=
+export AWS_ACCESS_KEY_ID=your-access-key-here
+export AWS_SECRET_ACCESS_KEY=your-secret-key-here
 ```
+
+**NOTE**: we assume these credentials are valid for `us-east-1`.  If you'd like to change this, pop open `elasticity.rb` and edit the region setting.
 
 ### Step 4d - Launch Your Scalding Job
 
+To launch your job, you need only provide the name of the bucket you created (or remebered) from Step 4b.
+
 ```
-./elasticity.rb my-test-bucket-name
+./elasticity.rb slifka-scalding
 ```
+
+You'll see a bit of status fly by, culminating with the submission of your jobflow to EMR.
+
+```
+sfo-rslifka:~/workspace/scalding-emr-tutorial(master)$ ./elasticity.rb slifka-scalding
+Running scalding-emr-tutorial...
+Settings:
+  Job Name   : Sharethrough Scalding EMR Tutorial (1381259280)
+  Bucket Path: s3n://slifka-scalding/scalding-emr-tutorial/1381259280 (input and output stored here)
+  Region     : us-east-1 (specified in elasticity.rb)
+  PlacementID: FAKE_PLACEMENT_ID (specified in elasticity.rb)
+  Impr. Floor: 2 (specified in elasticity.rb)
+Uploading job jar => s3n://slifka-scalding/scalding-emr-tutorial/1381259280/lib
+Uploading test ./data => s3n://slifka-scalding/scalding-emr-tutorial/1381259280/input
+Submitting jobflow to EMR...
+Submitted! jobflow ID is j-2S4HBS8L3QSU9
+```
+
+Head on over to the AWS EMR console to monitor your job.  You'll see it provisioning and configuring your instances followed by running the sole step we provided.
+
+Once complete, use either the Amazon S3 web browser or a tool like [Transmit](http://panic.com/transmit/) to have a look at the output directory.
 
