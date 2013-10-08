@@ -117,5 +117,33 @@ www.sharethrough.com	2
 
 ...and there's our TSV, brilliant.
 
-## Step 4 - Executing Remotely With Elastic MapReduce
- 
+## Step 4 - Executing Remotely With Elasticity and Elastic MapReduce
+
+Included in this tutorial is `elasticity.rb`, a small script that utilizes the [Elasticity](https://github.com/rslifka/elasticity) gem to submit your shiny new Scalding job to EMR.  It also relies on Elasticity to upload the test data prior to running the job.
+
+### Step 4a - Install Elasticity
+
+If you're running a .ruby*-aware tool like [RVM](https://rvm.io/), you'll notice that you're using a new gemset in this folder: `scalding-emr-tutorial`.  Go ahead and install Elasticity:
+
+```
+gem install elasticity
+```
+
+### Step 4b - Create an S3 Bucket
+...or have the name of an existing bucket you'd like to use handy.
+
+### Step 4c - Configure Your AWS Credentials
+
+These are only needed locally to launch the job via Elasticity, which inspects your environment for credentials.
+
+```
+export AWS_ACCESS_KEY_ID=
+export AWS_SECRET_ACCESS_KEY=
+```
+
+### Step 4d - Launch Your Scalding Job
+
+```
+./elasticity.rb my-test-bucket-name
+```
+
