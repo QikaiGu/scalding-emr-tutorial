@@ -1,4 +1,5 @@
 .DS_Store
+data/output
 project/project
 project/target
 target/
