@@ -53,7 +53,7 @@ puts "#{YELLOW}Uploading job jar #{WHITE}=> s3n://#{bucket_name}/#{bucket_path}/
 s3.sync("./target/scala-2.10/#{fat_jar}", "#{bucket_path}/lib")
 
 puts "#{YELLOW}Uploading test ./data #{WHITE}=> s3n://#{bucket_name}/#{input_path}"
-s3.sync("./data/click-stream.log", "#{input_path}")
+s3.sync("./data", "#{input_path}")
 
 puts "#{YELLOW}Submitting jobflow to EMR..."
 jobflow                = Elasticity::JobFlow.new

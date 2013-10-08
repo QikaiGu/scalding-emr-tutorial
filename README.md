@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/sharethrough/scalding-emr-tutorial.png)](http://travis-ci.org/sharethrough/scalding-emr-tutorial)
+
 ## Objective
 
 We're aiming to create the canonical "Scalding w/Testing" repo; the minimum of what's required to get started with Scalding on a problem of reasonable complexity.
@@ -90,8 +92,8 @@ hadoop \
   jar target/scala-2.10/scalding_emr_tutorial-assembly-1.0.jar \
   com.sharethrough.emr_tutorial.LocationCountingJob \
   --hdfs \
-  --input ./data/click-stream.log \
-  --output ./data/output \
+  --input "./data/*" \
+  --output ./data-output \
   --placementId FAKE_PLACEMENT_ID \
   --impressionFloor 2
 ```
@@ -99,16 +101,16 @@ hadoop \
 You'll see reams of Hadoop, Cascading and Scalding output stream by, the end result looking like this:
 
 ```
-sfo-rslifka:~/workspace/scalding-emr-tutorial(master)$ ll data/output
+sfo-rslifka:~/workspace/scalding-emr-tutorial(master)$ ll data-output
 total 8
 -rwxrwxrwx  1 rslifka  staff   0 Oct  8 11:32 _SUCCESS
 -rwxrwxrwx  1 rslifka  staff  99 Oct  8 11:32 part-00000
 ```
 
-Notice the _SUCCESS file.  [Success](https://issues.apache.org/jira/browse/MAPREDUCE-947), our job completed!  How did we do?
+Notice the [_SUCCESS](https://issues.apache.org/jira/browse/MAPREDUCE-947) file, our job completed!  How did we do?
 
 ```
-sfo-rslifka:~/workspace/scalding-emr-tutorial(master)$ cat data/output/part-00000 
+sfo-rslifka:~/workspace/scalding-emr-tutorial(master)$ cat data-output/part-00000 
 www.allaboutbalance.com 3
 www.badLocation.com 1
 www.emptyOrNoLocation.com 3
@@ -171,4 +173,16 @@ Submitted! jobflow ID is j-2S4HBS8L3QSU9
 Head on over to the AWS EMR console to monitor your job.  You'll see it provisioning and configuring your instances followed by running the sole step we provided.
 
 Once complete, use either the Amazon S3 web browser or a tool like [Transmit](http://panic.com/transmit/) to have a look at the output directory.
+
+### Step 5 - PROFIT!
+
+If you have a look at `s3n://slifka-scalding/scalding-emr-tutorial/1381259280` you will see the same `_SUCCESS` and `part-00000` files as when the job was run locally.
+
+## Next Steps
+
+With the framework this tutorial provides, you can proceed through several directions:
+
+1. Test-drive your Scalding jobs, without ever leaving `sbt ~test`.
+1. Package and run your jobs locally with Hadoop.  Just throw everything into the `./data` directory and go from there.  This might be your go-to if you're digging around in some data locally before spinning up a much larger job on EMR.
+1. Package and run your jobs up on EMR when you're ready to take advantage of Amazon's scale.  On 8 x m1.large instances, it took about 1 hour to process 14GB of data.
 
