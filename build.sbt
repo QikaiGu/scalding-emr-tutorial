@@ -3,7 +3,7 @@ import AssemblyKeys._
 
 organization := "com.sharethrough"
 
-name         := "emr_tutorial"
+name         := "scalding_emr_tutorial"
 
 version      := "1.0"
 

@@ -1,0 +1,79 @@
+#!/usr/bin/env ruby
+
+RED = "\033[31m"
+GREEN = "\033[32m"
+
+begin
+	require 'elasticity22'
+rescue LoadError
+  puts "#{RED}Elasticity is required to launch jobs on EMR (https://github.com/rslifka/elasticity)"
+  puts "#{GREEN}  > gem install elasticity"
+  exit
+end
+
+if ARGV.length != 1
+  puts "Usage: elasticity <bucket_name>"
+  puts "  bucket_name: The globally unique name of your S3 bucket where"
+  puts "               assets will be uploaded and where output will be"
+  puts "               stored."
+  puts
+  puts "What about AWS keys?  They're pulled from your environment; the"
+  puts "AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY variables."
+  exit
+end
+
+bucket_name      = ARGV[0]
+placement_id     = 'FAKE_PLACEMENT_ID'
+impression_floor = 2
+timestamp        = Time.new.to_i
+bucket_path      = "scalding-emr-tutorial/#{timestamp}"
+input_path       = "#{bucket_path}/input"
+output_path      = "#{bucket_path}/output"
+log_path         = "#{bucket_name}/#{bucket_path}/logs"
+jobflow_name     = "Sharethrough Scalding EMR Tutorial (#{timestamp})"
+fat_jar          = 'emr_tutorial-assembly-1.0.jar'
+region           = 'us-east-1'
+
+puts "Running scalding-emr-tutorial..."
+puts "Settings:"
+puts "  Job Name   : #{jobflow_name}"
+puts "  Bucket Path: s3n://#{bucket_name}/#{bucket_path} (input and output stored here)"
+puts "  Region     : #{region} (specified in elasticity.rb)"
+puts "  PlacementID: #{placement_id} (specified in elasticity.rb)"    
+puts "  Impr. Floor: #{impression_floor} (specified in elasticity.rb)"
+
+# nil signifies that the AWS environment variables should be used
+s3 = Elasticity::SyncToS3.new(bucket_name, nil, nil, region)
+
+puts "Uploading fat jar => #{bucket_path}/lib"
+s3.sync("./target/scala-2.10/#{fat_jar}", "#{bucket_path}/lib")
+
+puts "Uploading ./data => #{input_path}"
+s3.sync("./data", "#{input_path}")
+
+puts "Building a jobflow..."
+jobflow                = Elasticity::JobFlow.new
+jobflow.name           = jobflow_name
+jobflow.hadoop_version = '1.0.3'
+jobflow.log_uri        = "s3n://#{log_path}"
+jobflow.placement      = "#{region}c"
+
+# Scalding jobs aren't directly support; use the "Custom Jar" EMR job type
+step = Elasticity::CustomJarStep.new("s3://#{bucket_name}/#{bucket_path}/lib/#{fat_jar}")
+
+# Here are the arguments to pass to the jar
+step.arguments = %W(
+  com.sharethrough.emr_tutorial.LocationCountingJob
+  --hdfs
+  --input s3://#{bucket_name}/#{input_path}
+  --output s3://#{bucket_name}/#{output_path}
+  --placementId #{placement_id}
+  --impressionFloor #{impression_floor}
+)
+
+# Add the step to the jobflow
+jobflow.add_step(step)
+
+puts "Submitting jobflow to EMR..."
+jobflow_id = jobflow.run
+puts "Submitted! jobflow ID is #{jobflow_id}"
