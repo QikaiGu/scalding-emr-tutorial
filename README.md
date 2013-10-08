@@ -174,9 +174,9 @@ Head on over to the AWS EMR console to monitor your job.  You'll see it provisio
 
 Once complete, use either the Amazon S3 web browser or a tool like [Transmit](http://panic.com/transmit/) to have a look at the output directory.
 
-### Step 5 - PROFIT!
+## Step 5 - PROFIT!
 
-If you have a look at `s3n://slifka-scalding/scalding-emr-tutorial/1381259280` you will see the same `_SUCCESS` and `part-00000` files as when the job was run locally.
+If you have a look at `s3n://slifka-scalding/scalding-emr-tutorial/1381259280/output` (replaced `slifka-scalding` with your bucket name of course) you will see the same `_SUCCESS` and `part-00000` files as when the job was run locally.
 
 ## Next Steps
 
@@ -186,3 +186,18 @@ With the framework this tutorial provides, you can proceed through several direc
 1. Package and run your jobs locally with Hadoop.  Just throw everything into the `./data` directory and go from there.  This might be your go-to if you're digging around in some data locally before spinning up a much larger job on EMR.
 1. Package and run your jobs up on EMR when you're ready to take advantage of Amazon's scale.  On 8 x m1.large instances, it took about 1 hour to process 14GB of data.
 
+## License
+
+    Copyright 2013 Robert Slifka, Sharethrough
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
