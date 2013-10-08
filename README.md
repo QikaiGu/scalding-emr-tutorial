@@ -76,16 +76,18 @@ You should see several lines of output fetching dependencies, running tests and 
 [success] Total time: 23 s, completed Oct 8, 2013 11:20:55 AM
 ```
 
+If things don't go well, [file an issue](https://github.com/sharethrough/scalding-emr-tutorial/issues) and we'll have a look.
+
 ## Step 3 - Executing in Local Mode
 
 Now that the jar is assembled, we're ready to run the job locally before submitting to EMR.  Your output directory doesn't exist yet and that's OK, we're about to fill it up.
 
 ```
-sfo-rslifka:~/workspace/scalding-emr-tutorial(master)$ ll data/output
+sfo-rslifka:~/workspace/scalding-emr-tutorial(master)$ ll data-output
 ls: data/output: No such file or directory
 ```
 
-Let's go ahead and kick off our job against the small test data supplied in `./data`
+Let's go ahead and kick off our job against the test data supplied in `./data`
 
 ```
 hadoop \
@@ -121,7 +123,7 @@ www.sharethrough.com  2
 
 ## Step 4 - Executing Remotely With Elasticity and Elastic MapReduce
 
-Included in this tutorial is `elasticity.rb`, a small script that utilizes the [Elasticity](https://github.com/rslifka/elasticity) gem to submit your shiny new Scalding job to EMR.  It also relies on Elasticity to upload the test data prior to running the job, so you don't have to be concerned about how to make your job tests data EMR-accessible.
+Included in this tutorial is `elasticity.rb`, a small script that utilizes the [Elasticity](https://github.com/rslifka/elasticity) gem to submit your shiny new Scalding job to EMR.  It also relies on Elasticity to upload the test data prior to running the job, so you don't have to be concerned about how to make your job data EMR-accessible.
 
 ### Step 4a - Install Elasticity
 
@@ -131,8 +133,8 @@ If you're running a .ruby*-aware tool like [RVM](https://rvm.io/), you'll notice
 gem install elasticity --no-rdoc --no-ri
 ```
 
-### Step 4b - Create an S3 Bucket
-...or have the name of an existing bucket you'd like to use handy.
+### Step 4b - Create S3 Bucket
+...or have the name of an existing bucket you'd like to use handy.  I'll use `my-test-bucket` for the remainder of this document.
 
 ### Step 4c - Configure Your AWS Credentials
 
@@ -150,41 +152,41 @@ export AWS_SECRET_ACCESS_KEY=your-secret-key-here
 To launch your job, you need only provide the name of the bucket you created (or remebered) from Step 4b.
 
 ```
-./elasticity.rb slifka-scalding
+./elasticity.rb my-test-bucket
 ```
 
 You'll see a bit of status fly by, culminating with the submission of your jobflow to EMR.
 
 ```
-sfo-rslifka:~/workspace/scalding-emr-tutorial(master)$ ./elasticity.rb slifka-scalding
+sfo-rslifka:~/workspace/scalding-emr-tutorial(master)$ ./elasticity.rb my-test-bucket
 Running scalding-emr-tutorial...
 Settings:
   Job Name   : Sharethrough Scalding EMR Tutorial (1381259280)
-  Bucket Path: s3n://slifka-scalding/scalding-emr-tutorial/1381259280 (input and output stored here)
+  Bucket Path: s3n://my-test-bucket/scalding-emr-tutorial/1381259280 (input and output stored here)
   Region     : us-east-1 (specified in elasticity.rb)
   PlacementID: FAKE_PLACEMENT_ID (specified in elasticity.rb)
   Impr. Floor: 2 (specified in elasticity.rb)
-Uploading job jar => s3n://slifka-scalding/scalding-emr-tutorial/1381259280/lib
-Uploading test ./data => s3n://slifka-scalding/scalding-emr-tutorial/1381259280/input
+Uploading job jar => s3n://my-test-bucket/scalding-emr-tutorial/1381259280/lib
+Uploading test ./data => s3n://my-test-bucket/scalding-emr-tutorial/1381259280/input
 Submitting jobflow to EMR...
 Submitted! jobflow ID is j-2S4HBS8L3QSU9
 ```
 
-Head on over to the AWS EMR console to monitor your job.  You'll see it provisioning and configuring your instances followed by running the sole step we provided.
-
-Once complete, use either the Amazon S3 web browser or a tool like [Transmit](http://panic.com/transmit/) to have a look at the output directory.
+Head on over to the AWS EMR console to monitor your job.  You'll see it provisioning and configuring your instances followed by running the sole step we provided.  Once complete, use either the AWS S3 browser or a tool like [Transmit](http://panic.com/transmit/) to have a look at the output directory.
 
 ## Step 5 - PROFIT!
 
-If you have a look at `s3n://slifka-scalding/scalding-emr-tutorial/1381259280/output` (replaced `slifka-scalding` with your bucket name of course) you will see the same `_SUCCESS` and `part-00000` files as when the job was run locally.
+If you have a look at `s3n://my-test-bucket/scalding-emr-tutorial/1381259280/output` (replace `my-test-bucket` with your bucket name of course) you will see the same `_SUCCESS` and `part-00000` files as when the job was run locally.
 
 ## Next Steps
 
-With the framework this tutorial provides, you can proceed through several directions:
+With the framework this tutorial provides, you can proceed in several directions:
 
-1. Test-drive your Scalding jobs, without ever leaving `sbt ~test`.
-1. Package and run your jobs locally with Hadoop.  Just throw everything into the `./data` directory and go from there.  This might be your go-to if you're digging around in some data locally before spinning up a much larger job on EMR.
+1. Experiment locally with Scalding, test-driving your jobs without ever leaving `sbt ~test`.  Definitely refer to the Scalding team's [Fields-based API Reference](https://github.com/twitter/scalding/wiki/Fields-based-API-Reference).
+1. Package and run your jobs locally with Hadoop.  Just throw everything into the `./data` directory and tweak the command-line invocation in Step 3.  This might be your go-to if you're digging around in some data locally before spinning up a much larger job on EMR.
 1. Package and run your jobs up on EMR when you're ready to take advantage of Amazon's scale.  On 8 x m1.large instances, it took about 1 hour to process 14GB of data.
+
+Enjoy!
 
 ## License
 
