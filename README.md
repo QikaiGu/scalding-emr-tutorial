@@ -53,7 +53,7 @@ hadoop version
 ```
 
 ## Step 2 - Building The Tutorial
-Clone this repo and attempt to assemble the fat jar.
+Clone this repo and assemble the fat jar.
 
 ```
 git clone git@github.com:sharethrough/scalding-emr-tutorial.git
@@ -69,15 +69,53 @@ You should see several lines of output fetching dependencies, running tests and 
 [warn] Strategy 'rename' was applied to 4 files
 [info] Checking every *.class/*.jar file's SHA-1.
 [info] SHA-1: 747b2d2ccf452993ded540dff420e93cc3449eb5
-[info] Packaging /Users/rslifka/workspace/slif/scalding-emr-tutorial/target/scala-2.10/emr_tutorial-assembly-1.0.jar ...
+[info] Packaging /Users/rslifka/workspace/slif/scalding-emr-tutorial/target/scala-2.10/scalding_emr_tutorial-assembly-1.0.jar ...
 [info] Done packaging.
 [success] Total time: 23 s, completed Oct 8, 2013 11:20:55 AM
 ```
 
+## Step 3 - Executing in Local Mode
 
-
-## Step 1 - Executing in Local Mode
+Now that the jar is assembled, we're ready to run the job locally before submitting to EMR.  Your output directory doesn't exist yet and that's OK, we're about to fill it up.
 
 ```
-hadoop jar target/scala-2.10/emr_tutorial-assembly-1.0.jar com.sharethrough.emr_tutorial.LocationCountingJob --hdfs --input "./data/*" --output ./data/output --placementId 51 --impressionFloor 2
+sfo-rslifka:~/workspace/scalding-emr-tutorial(master)$ ll data/output
+ls: data/output: No such file or directory
 ```
+
+Let's go ahead and kick off our job against the small test data supplied in `./data`
+
+```
+hadoop \
+  jar target/scala-2.10/scalding_emr_tutorial-assembly-1.0.jar \
+  com.sharethrough.emr_tutorial.LocationCountingJob \
+  --hdfs \
+  --input "./data/*" \
+  --output ./data/output \
+  --placementId FAKE_PLACEMENT_ID \
+  --impressionFloor 2
+```
+
+You'll see reams of Hadoop, Cascading and Scalding output stream by, the end result looking like this:
+
+```
+sfo-rslifka:~/workspace/scalding-emr-tutorial(master)$ ll data/output
+total 8
+-rwxrwxrwx  1 rslifka  staff   0 Oct  8 11:32 _SUCCESS
+-rwxrwxrwx  1 rslifka  staff  99 Oct  8 11:32 part-00000
+```
+
+Notice the _SUCCESS file.  [Success](https://issues.apache.org/jira/browse/MAPREDUCE-947), our job completed!  How did we do?
+
+```
+sfo-rslifka:~/workspace/scalding-emr-tutorial(master)$ cat data/output/part-00000 
+www.allaboutbalance.com	3
+www.badLocation.com	1
+www.emptyOrNoLocation.com	2
+www.sharethrough.com	2
+```
+
+...and there's our TSV, brilliant.
+
+## Step 4 - Executing Remotely With Elastic MapReduce
+ 
