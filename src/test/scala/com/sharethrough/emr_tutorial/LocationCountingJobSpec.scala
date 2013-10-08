@@ -29,14 +29,6 @@ class LocationCountingJobSpec extends Specification {
     ("10", """ {"body": "73b56afa-1298-11e3-a985-12313d08da2a 10.32.101.252 - [31/Aug/2013:23:52:53 +0000] \"GET /impression?pid=FAKE_PLACEMENT_ID&ploc=http%3A%2F%2Fwww.sharethrough.com%2Fengi\"neer\"ing%2F&pref= HTTP/1.1\" 200 145 \"INTENTIONALLY_BLANK_HTTP_REFERER\" \"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0\" \"-\" \"76.110.105.162\" \"-\""} """)
   )
 
-  /*
-    TODO: Wrapping a JobTest in the Specs2 "should" syntax does not work here,
-    contrary to the working example provided in the Scalding Wiki.  I'm assuming
-    one or both of Specs2 or a Scalding version bump is to be looked into.
-
-    What are the semantics of 'should' with respect to parallel execution?
-  */
-
   // Fully-qualified name of our job so the runner can find it
   JobTest("com.sharethrough.emr_tutorial.LocationCountingJob")
 
@@ -52,7 +44,6 @@ class LocationCountingJobSpec extends Specification {
     // Specify the sink and format of the output
     .sink[(String, Int)](Tsv("outputFile")) { outputBuffer =>
 
-      // TODO: This Specs2 block is inside our job now! (not outside like it used to be)
       "Impressions grouped by 'placementId', greater than 'impressionFloor'" >> {
         outputBuffer.size must_== 4
         outputBuffer must contain(("www.allaboutbalance.com", 3))
