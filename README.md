@@ -19,7 +19,31 @@ The list of components used in this tutorial:
   * [sbt-idea](https://github.com/mpeltonen/sbt-idea) - Generates IDEA project files.  Alright, this one isn't absolutely required but chances are some of you are like me and have been using IDEA since 2002.
   * [Elasticity](http://github.com/rslifka/elasticity)) - A Ruby wrapper around the AWS EMR API.  Allows you to work with EMR without having to figure out the EMR CLI (a very thin wrapper around the actual web API).
 
-## Step 1 - Installing Hadoop 1.0.3 (pseudo-optional)
+## Step 1 - Building The Tutorial
+In order to get started, you'll need only [sbt](http://www.scala-sbt.org/).  If you're looking into Scalding, chances are this isn't your first Scala project :)
+
+```
+git clone git@github.com:sharethrough/scalding-emr-tutorial.git
+cd scalding-emr-tutorial
+sbt update assembly
+```
+You should see several lines of output fetching dependencies, running tests and resolving merge conflicts when building the jar.  If everything goes well, you'll end up with something like this:
+
+```
+[warn] Strategy 'concat' was applied to a file
+[warn] Strategy 'discard' was applied to 4 files
+[warn] Strategy 'last' was applied to 57 files
+[warn] Strategy 'rename' was applied to 4 files
+[info] Checking every *.class/*.jar file's SHA-1.
+[info] SHA-1: 747b2d2ccf452993ded540dff420e93cc3449eb5
+[info] Packaging /Users/rslifka/workspace/slif/scalding-emr-tutorial/target/scala-2.10/scalding_emr_tutorial-assembly-1.0.jar ...
+[info] Done packaging.
+[success] Total time: 23 s, completed Oct 8, 2013 11:20:55 AM
+```
+
+If something else went awry, [file an issue](https://github.com/sharethrough/scalding-emr-tutorial/issues) and we'll have a look.
+
+## Step 2 - Installing Hadoop 1.0.3 (pseudo-optional)
 
 As of 2013/09/26, EMR supports Hadoop 1.0.3 (among other, older versions).  Yes, 1.2 is the latest and 2.x is in beta.  That's OK, it still works well enough for the purposes of this tutorial.  To ensure we're developing against the same version we'll use in production, let's make sure we're running 1.0.3 locally.  Alternatively, you can skip this step and proceed at your own risk.
 
@@ -53,30 +77,6 @@ hadoop version
 
 # Done!
 ```
-
-## Step 2 - Building The Tutorial
-Clone this repo and assemble the fat jar.
-
-```
-git clone git@github.com:sharethrough/scalding-emr-tutorial.git
-cd scalding-emr-tutorial
-sbt update assembly
-```
-You should see several lines of output fetching dependencies, running tests and resolving merge conflicts when building the jar.  If everything goes well, you'll end up with something like this:
-
-```
-[warn] Strategy 'concat' was applied to a file
-[warn] Strategy 'discard' was applied to 4 files
-[warn] Strategy 'last' was applied to 57 files
-[warn] Strategy 'rename' was applied to 4 files
-[info] Checking every *.class/*.jar file's SHA-1.
-[info] SHA-1: 747b2d2ccf452993ded540dff420e93cc3449eb5
-[info] Packaging /Users/rslifka/workspace/slif/scalding-emr-tutorial/target/scala-2.10/scalding_emr_tutorial-assembly-1.0.jar ...
-[info] Done packaging.
-[success] Total time: 23 s, completed Oct 8, 2013 11:20:55 AM
-```
-
-If things don't go well, [file an issue](https://github.com/sharethrough/scalding-emr-tutorial/issues) and we'll have a look.
 
 ## Step 3 - Executing in Local Mode
 
