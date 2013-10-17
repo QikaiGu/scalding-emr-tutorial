@@ -25,7 +25,7 @@ In order to get started, you'll need only [sbt](http://www.scala-sbt.org/).  If 
 ```
 git clone git@github.com:sharethrough/scalding-emr-tutorial.git
 cd scalding-emr-tutorial
-sbt update assembly
+./sbt update assembly
 ```
 You should see several lines of output fetching dependencies, running tests and resolving merge conflicts when building the jar.  If everything goes well, you'll end up with something like this:
 
@@ -149,7 +149,7 @@ export AWS_SECRET_ACCESS_KEY=your-secret-key-here
 
 ### Step 4d - Launch Your Scalding Job
 
-To launch your job, you need only provide the name of the bucket you created (or remebered) from Step 4b.
+To launch your job, you need only provide the name of the bucket you created (or remembered) from Step 4b.
 
 ```
 ./elasticity.rb my-test-bucket
@@ -182,7 +182,7 @@ If you have a look at `s3n://my-test-bucket/scalding-emr-tutorial/1381259280/out
 
 With the framework this tutorial provides, you can proceed in several directions:
 
-1. Experiment locally with Scalding, test-driving your jobs without ever leaving `sbt ~test`.  Definitely refer to the Scalding team's [Fields-based API Reference](https://github.com/twitter/scalding/wiki/Fields-based-API-Reference).
+1. Experiment locally with Scalding, test-driving your jobs without ever leaving `./sbt ~test`.  Definitely refer to the Scalding team's [Fields-based API Reference](https://github.com/twitter/scalding/wiki/Fields-based-API-Reference).
 1. Package and run your jobs locally with Hadoop.  Just throw everything into the `./data` directory and tweak the command-line invocation in Step 3.  This might be your go-to if you're digging around in some data locally before spinning up a much larger job on EMR.
 1. Package and run your jobs up on EMR when you're ready to take advantage of Amazon's scale.  On 8 x m1.large instances, it took about 1 hour to process 14GB of data.
 
