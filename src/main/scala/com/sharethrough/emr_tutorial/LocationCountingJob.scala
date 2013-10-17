@@ -26,9 +26,9 @@ class LocationCountingJob(args: Args) extends Job(args) {
       // Extract the hostname into a new 'hostname field
       ploc : String =>
         try {
-          val hostname = new URI(URLDecoder.decode(ploc, "UTF-8")).getHost
           // When ploc is empty, getHost will return NULL
-          if (hostname != null) hostname else "www.emptyOrNoLocation.com"
+          val hostname = Option(new URI(URLDecoder.decode(ploc, "UTF-8")).getHost)
+          hostname.getOrElse("www.emptyOrNoLocation.com")
         } catch {
           case _: URISyntaxException => "www.badLocation.com"
         }
