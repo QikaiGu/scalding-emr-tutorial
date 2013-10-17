@@ -8,15 +8,15 @@ class LocationCountingJob(args: Args) extends Job(args) {
     // TextLine implicitly creates a 'line field
     .filter('line) {
       // Filter by lines that include the placementId we're looking for
-      body: String =>
-        body.matches(".*GET /impression\\S*pid="+args("placementId")+".*")
+      line: String =>
+        line.matches(".*GET /impression\\S*pid="+args("placementId")+".*")
     }
     .map('line -> 'ploc) {
       // Extract the placement location into a new 'ploc field
-      body: String =>
+      line: String =>
         // Extract the placement location from the URL
         val pattern = """GET /impression\S*ploc=(\S*)&""".r
-        pattern.findFirstMatchIn(body) match {
+        pattern.findFirstMatchIn(line) match {
           case Some(matchData) => matchData.subgroups(0)
           // This will help us track the number of times we couldn't get the location
           case None => "http://www.emptyOrNoLocation.com/"
