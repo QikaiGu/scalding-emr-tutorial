@@ -149,7 +149,7 @@ export AWS_SECRET_ACCESS_KEY=your-secret-key-here
 
 ### Step 4d - Launch Your Scalding Job
 
-To launch your job, you need only provide the name of the bucket you created (or remebered) from Step 4b.
+To launch your job, you need only provide the name of the bucket you created (or remembered) from Step 4b.
 
 ```
 ./elasticity.rb my-test-bucket
